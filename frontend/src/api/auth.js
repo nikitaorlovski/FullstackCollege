@@ -12,7 +12,7 @@ export const filmsAPI = {
 }
 
 export const hallsAPI = {
-  getHalls: () => axios.get(`${API_BASE}/halls`),
+  getHalls: () => axios.get(`${API_BASE}/halls/`),
 }
 
 export const authAPI = {
