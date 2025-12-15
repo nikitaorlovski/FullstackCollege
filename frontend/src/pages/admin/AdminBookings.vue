@@ -232,10 +232,7 @@
         <div class="modal-actions">
           <button
             v-if="selectedBooking.status === 'active'"
-            @click="
-              cancelBooking(selectedBooking.booking_id || selectedBooking.id)
-              closeModal()
-            "
+            @click="handleCancelAndClose"
             class="cancel-btn"
           >
             🗑️ Отменить бронирование
@@ -287,7 +284,10 @@ export default {
         selectedBooking.value = booking
       }
     }
-
+    const handleCancelAndClose = () => {
+      cancelBooking(selectedBooking.value.booking_id || selectedBooking.value.id)
+      closeModal()
+    }
     const closeModal = () => {
       selectedBooking.value = null
       bookingDetails.value = null
@@ -413,6 +413,7 @@ export default {
       filteredBookings,
       loadBookings,
       cancelBooking,
+      handleCancelAndClose,
       getStatusText,
       formatDate,
       selectedBooking,
