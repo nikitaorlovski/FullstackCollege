@@ -186,7 +186,7 @@ export default {
         }
 
         // Загружаем залы
-        const hallsResponse = await fetch(`${API_BASE}/halls`)
+        const hallsResponse = await fetch(`${API_BASE}/halls/`)
         if (hallsResponse.ok) {
           halls.value = await hallsResponse.json()
         }
