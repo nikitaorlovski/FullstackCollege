@@ -646,3 +646,14 @@ BEGIN
     ORDER BY b.created_at DESC;
 END;
 $$ LANGUAGE plpgsql;
+
+CREATE EXTENSION IF NOT EXISTS pgcrypto;
+
+INSERT INTO users (name, email, password_hash, role)
+VALUES (
+    'admin',
+    'admin@admin.com',
+    crypt('admin', gen_salt('bf'))::bytea,
+    'admin'
+)
+ON CONFLICT (email) DO NOTHING;
