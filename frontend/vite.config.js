@@ -13,6 +13,6 @@ export default defineConfig({
   },
   preview: {
     host: true,
-    allowedHosts: 'all', // 🔥 ключевая строка
+    allowedHosts: 'gracious-tenderness-production.up.railway.app', // 🔥 ключевая строка
   },
 })
