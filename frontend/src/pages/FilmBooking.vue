@@ -368,7 +368,7 @@ export default {
 
         // Создаем бронирования для каждого выбранного места
         const bookingPromises = selectedSeats.value.map((seat) =>
-          fetch(`${API_BASE}/bookings`, {
+          fetch(`${API_BASE}/bookings/`, {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
