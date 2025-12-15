@@ -101,7 +101,7 @@ export default {
 
     const loading = ref(false)
     const loginError = ref('')
-
+    const API_BASE = import.meta.env.VITE_API_URL
     const isFormValid = computed(() => {
       return form.value.email && form.value.password
     })
@@ -109,7 +109,7 @@ export default {
     // ⭐ ДОБАВЛЯЕМ ФУНКЦИЮ ДЛЯ ЗАГРУЗКИ ИНФОРМАЦИИ О ПОЛЬЗОВАТЕЛЕ
     const loadUserInfo = async (token) => {
       try {
-        const response = await fetch('http://localhost:8000/views/user-info', {
+        const response = await fetch(`${API_BASE}/views/user-info`, {
           headers: {
             Authorization: `Bearer ${token}`,
             'Content-Type': 'application/json',
@@ -119,26 +119,19 @@ export default {
         if (response.ok) {
           const userInfo = await response.json()
           localStorage.setItem('userInfo', JSON.stringify(userInfo))
-          console.log('User info loaded:', userInfo)
           return userInfo
-        } else {
-          console.warn('Failed to load user info, using default')
-          const defaultUserInfo = {
-            name: form.value.email.split('@')[0],
-            email: form.value.email,
-            role: 'user',
-          }
-          localStorage.setItem('userInfo', JSON.stringify(defaultUserInfo))
-          return defaultUserInfo
         }
+
+        throw new Error('Failed to load user info')
       } catch (error) {
         console.error('Error loading user info:', error)
-        // Создаем базовую информацию о пользователе
+
         const defaultUserInfo = {
           name: form.value.email.split('@')[0],
           email: form.value.email,
           role: 'user',
         }
+
         localStorage.setItem('userInfo', JSON.stringify(defaultUserInfo))
         return defaultUserInfo
       }

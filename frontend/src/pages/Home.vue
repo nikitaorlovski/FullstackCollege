@@ -55,6 +55,7 @@ export default {
     FilmGrid,
   },
   setup() {
+    const API_BASE = import.meta.env.VITE_API_URL
     const films = ref([])
     const loading = ref(true)
     const selectedCategory = ref('Все')
@@ -102,7 +103,7 @@ export default {
 
     const fetchFilms = async () => {
       try {
-        const response = await axios.get('http://localhost:8000/films/')
+        const response = await axios.get(`${API_BASE}/films/`)
         films.value = response.data
       } catch (error) {
         console.error('Ошибка загрузки фильмов:', error)

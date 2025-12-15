@@ -1,7 +1,7 @@
 <template>
   <div class="admin-container">
     <Navbar />
-    
+
     <div class="admin-content">
       <!-- Заголовок с иконкой -->
       <div class="admin-header">
@@ -47,8 +47,8 @@
       <div class="filter-section">
         <h3 class="filter-title">Фильтры</h3>
         <div class="filter-tabs">
-          <button 
-            class="filter-tab" 
+          <button
+            class="filter-tab"
             :class="{ active: activeFilter === 'all' }"
             @click="activeFilter = 'all'"
           >
@@ -56,8 +56,8 @@
             Все
             <span class="tab-count">{{ bookings.length }}</span>
           </button>
-          <button 
-            class="filter-tab" 
+          <button
+            class="filter-tab"
             :class="{ active: activeFilter === 'active' }"
             @click="activeFilter = 'active'"
           >
@@ -65,8 +65,8 @@
             Активные
             <span class="tab-count">{{ activeBookings.length }}</span>
           </button>
-          <button 
-            class="filter-tab" 
+          <button
+            class="filter-tab"
             :class="{ active: activeFilter === 'canceled' }"
             @click="activeFilter = 'canceled'"
           >
@@ -88,9 +88,7 @@
           <div class="error-icon">⚠️</div>
           <h3>Ошибка загрузки</h3>
           <p>{{ error }}</p>
-          <button @click="loadBookings" class="retry-btn">
-            Попробовать снова
-          </button>
+          <button @click="loadBookings" class="retry-btn">Попробовать снова</button>
         </div>
 
         <div v-else-if="filteredBookings.length === 0" class="empty-state">
@@ -100,13 +98,13 @@
         </div>
 
         <div v-else class="bookings-grid">
-          <div 
-            v-for="booking in filteredBookings" 
-            :key="booking.id" 
+          <div
+            v-for="booking in filteredBookings"
+            :key="booking.id"
             class="booking-card"
             :class="{
-              'active': booking.status === 'active',
-              'canceled': booking.status === 'canceled'
+              active: booking.status === 'active',
+              canceled: booking.status === 'canceled',
             }"
           >
             <!-- Заголовок карточки -->
@@ -157,7 +155,7 @@
 
             <!-- Действия -->
             <div class="card-actions">
-              <button 
+              <button
                 v-if="booking.status === 'active'"
                 @click="cancelBooking(booking.id)"
                 class="action-btn cancel"
@@ -166,87 +164,87 @@
                 <span class="btn-icon">🗑️</span>
                 {{ cancelingBooking === booking.id ? 'Отмена...' : 'Отменить' }}
               </button>
-              <button 
-  @click.stop="showBookingDetails(booking)"
-  class="action-btn details"
->
-  <span class="btn-icon">👁️</span>
-  Детали
-</button>
+              <button @click.stop="showBookingDetails(booking)" class="action-btn details">
+                <span class="btn-icon">👁️</span>
+                Детали
+              </button>
             </div>
           </div>
         </div>
       </div>
     </div>
   </div>
-<!-- Модалка деталей бронирования -->
-<div v-if="selectedBooking" class="modal-overlay" @click="closeModal">
-  <div class="modal-content" @click.stop>
-    <button class="close-btn" @click="closeModal">×</button>
-    
-    <div class="booking-details-modal">
-      <h3 class="modal-title">Детали бронирования #{{ selectedBooking.booking_id || selectedBooking.id }}</h3>
-      
-      <div class="detail-grid">
-        <div class="detail-item">
-          <label>Фильм:</label>
-          <span>{{ selectedBooking.film_title || 'Не указан' }}</span>
-        </div>
-        <div class="detail-item">
-          <label>Пользователь:</label>
-          <span>{{ selectedBooking.user_name || `ID ${selectedBooking.user_id}` }}</span>
-        </div>
-        <div class="detail-item">
-          <label>Email:</label>
-          <span>{{ selectedBooking.email || 'Не указан' }}</span>
-        </div>
-        <div class="detail-item" v-if="selectedBooking.start_time">
-          <label>Время сеанса:</label>
-          <span>{{ formatDate(selectedBooking.start_time) }}</span>
-        </div>
-        <div class="detail-item">
-          <label>Зал:</label>
-          <span>{{ selectedBooking.hall_name || selectedBooking.hall_id || 'Не указан' }}</span>
-        </div>
-        <div class="detail-item">
-          <label>Место:</label>
-          <span>{{ selectedBooking.seat_number }}</span>
-        </div>
-        <div class="detail-item">
-          <label>Стоимость:</label>
-          <span>{{ selectedBooking.price || 'Не указана' }} ₽</span>
-        </div>
-        <div class="detail-item">
-          <label>Длительность:</label>
-          <span>{{ selectedBooking.duration || 'Не указана' }} мин.</span>
-        </div>
-        <div class="detail-item">
-          <label>Статус:</label>
-          <span class="booking-status" :class="selectedBooking.status">
-            {{ getStatusText(selectedBooking.status) }}
-          </span>
-        </div>
-        <div class="detail-item" v-if="selectedBooking.created_at">
-          <label>Дата создания:</label>
-          <span>{{ formatDate(selectedBooking.created_at) }}</span>
-        </div>
-      </div>
+  <!-- Модалка деталей бронирования -->
+  <div v-if="selectedBooking" class="modal-overlay" @click="closeModal">
+    <div class="modal-content" @click.stop>
+      <button class="close-btn" @click="closeModal">×</button>
 
-      <div class="modal-actions">
-        <button 
-          v-if="selectedBooking.status === 'active'"
-          @click="cancelBooking(selectedBooking.booking_id || selectedBooking.id); closeModal()"
-          class="cancel-btn"
-        >
-          🗑️ Отменить бронирование
-        </button>
-        <button @click="closeModal" class="close-modal-btn">
-          Закрыть
-        </button>
+      <div class="booking-details-modal">
+        <h3 class="modal-title">
+          Детали бронирования #{{ selectedBooking.booking_id || selectedBooking.id }}
+        </h3>
+
+        <div class="detail-grid">
+          <div class="detail-item">
+            <label>Фильм:</label>
+            <span>{{ selectedBooking.film_title || 'Не указан' }}</span>
+          </div>
+          <div class="detail-item">
+            <label>Пользователь:</label>
+            <span>{{ selectedBooking.user_name || `ID ${selectedBooking.user_id}` }}</span>
+          </div>
+          <div class="detail-item">
+            <label>Email:</label>
+            <span>{{ selectedBooking.email || 'Не указан' }}</span>
+          </div>
+          <div class="detail-item" v-if="selectedBooking.start_time">
+            <label>Время сеанса:</label>
+            <span>{{ formatDate(selectedBooking.start_time) }}</span>
+          </div>
+          <div class="detail-item">
+            <label>Зал:</label>
+            <span>{{ selectedBooking.hall_name || selectedBooking.hall_id || 'Не указан' }}</span>
+          </div>
+          <div class="detail-item">
+            <label>Место:</label>
+            <span>{{ selectedBooking.seat_number }}</span>
+          </div>
+          <div class="detail-item">
+            <label>Стоимость:</label>
+            <span>{{ selectedBooking.price || 'Не указана' }} ₽</span>
+          </div>
+          <div class="detail-item">
+            <label>Длительность:</label>
+            <span>{{ selectedBooking.duration || 'Не указана' }} мин.</span>
+          </div>
+          <div class="detail-item">
+            <label>Статус:</label>
+            <span class="booking-status" :class="selectedBooking.status">
+              {{ getStatusText(selectedBooking.status) }}
+            </span>
+          </div>
+          <div class="detail-item" v-if="selectedBooking.created_at">
+            <label>Дата создания:</label>
+            <span>{{ formatDate(selectedBooking.created_at) }}</span>
+          </div>
+        </div>
+
+        <div class="modal-actions">
+          <button
+            v-if="selectedBooking.status === 'active'"
+            @click="
+              cancelBooking(selectedBooking.booking_id || selectedBooking.id)
+              closeModal()
+            "
+            class="cancel-btn"
+          >
+            🗑️ Отменить бронирование
+          </button>
+          <button @click="closeModal" class="close-modal-btn">Закрыть</button>
+        </div>
       </div>
     </div>
   </div>
-</div>
 </template>
 
 <script>
@@ -257,38 +255,43 @@ import Navbar from '@/components/Layout/Navbar.vue'
 export default {
   name: 'AdminBookings',
   components: {
-    Navbar
+    Navbar,
   },
   setup() {
-    const selectedBooking = ref(null)
-const bookingDetails = ref(null)
+    const API_BASE = import.meta.env.VITE_API_URL
 
-const showBookingDetails = async (booking) => {
-  try {
-    const token = localStorage.getItem('token')
-    const response = await fetch(`http://localhost:8000/views/booking-details/${booking.id}`, {
-      headers: {
-        'Authorization': `Bearer ${token}`
-      }
-    })
-    
-    if (response.ok) {
-      bookingDetails.value = await response.json()
-      selectedBooking.value = bookingDetails.value
-    } else {
-      // Если нет деталей, используем базовые данные
-      selectedBooking.value = booking
+    if (!API_BASE) {
+      console.error('VITE_API_URL is not defined')
     }
-  } catch (err) {
-    console.error('Error loading booking details:', err)
-    selectedBooking.value = booking
-  }
-}
+    const selectedBooking = ref(null)
+    const bookingDetails = ref(null)
 
-const closeModal = () => {
-  selectedBooking.value = null
-  bookingDetails.value = null
-}
+    const showBookingDetails = async (booking) => {
+      try {
+        const token = localStorage.getItem('token')
+        const response = await fetch(`${API_BASE}/views/booking-details/${booking.id}`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        })
+
+        if (response.ok) {
+          bookingDetails.value = await response.json()
+          selectedBooking.value = bookingDetails.value
+        } else {
+          // Если нет деталей, используем базовые данные
+          selectedBooking.value = booking
+        }
+      } catch (err) {
+        console.error('Error loading booking details:', err)
+        selectedBooking.value = booking
+      }
+    }
+
+    const closeModal = () => {
+      selectedBooking.value = null
+      bookingDetails.value = null
+    }
     const router = useRouter()
     const bookings = ref([])
     const loading = ref(false)
@@ -301,10 +304,12 @@ const closeModal = () => {
       error.value = ''
       try {
         const token = localStorage.getItem('token')
-        const response = await fetch('http://localhost:8000/bookings/', {
-          headers: { 'Authorization': `Bearer ${token}` }
+        const response = await fetch(`${API_BASE}/bookings/`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
         })
-        
+
         if (response.ok) {
           bookings.value = await response.json()
         } else {
@@ -319,13 +324,15 @@ const closeModal = () => {
 
     const cancelBooking = async (bookingId) => {
       if (!confirm('Вы уверены, что хотите отменить это бронирование?')) return
-      
+
       cancelingBooking.value = bookingId
       try {
         const token = localStorage.getItem('token')
-        const response = await fetch(`http://localhost:8000/bookings/${bookingId}/cancel`, {
+        const response = await fetch(`${API_BASE}/bookings/${bookingId}/cancel`, {
           method: 'PUT',
-          headers: { 'Authorization': `Bearer ${token}` }
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
         })
 
         if (response.ok) {
@@ -342,8 +349,8 @@ const closeModal = () => {
 
     const getStatusText = (status) => {
       const statusMap = {
-        'active': 'Активно',
-        'canceled': 'Отменено'
+        active: 'Активно',
+        canceled: 'Отменено',
       }
       return statusMap[status] || status
     }
@@ -355,30 +362,26 @@ const closeModal = () => {
         month: 'short',
         year: 'numeric',
         hour: '2-digit',
-        minute: '2-digit'
+        minute: '2-digit',
       })
     }
 
     // Computed свойства
-    const activeBookings = computed(() => 
-      bookings.value.filter(b => b.status === 'active')
-    )
+    const activeBookings = computed(() => bookings.value.filter((b) => b.status === 'active'))
 
-    const canceledBookings = computed(() => 
-      bookings.value.filter(b => b.status === 'canceled')
-    )
+    const canceledBookings = computed(() => bookings.value.filter((b) => b.status === 'canceled'))
 
     const formatDateTime = (dateString) => {
-    if (!dateString) return 'Не указано'
-    const date = new Date(dateString)
-    return date.toLocaleString('ru-RU', {
-      hour: '2-digit',
-      minute: '2-digit',
-      day: 'numeric',
-      month: 'short',
-      year: 'numeric'
-    })
-  }
+      if (!dateString) return 'Не указано'
+      const date = new Date(dateString)
+      return date.toLocaleString('ru-RU', {
+        hour: '2-digit',
+        minute: '2-digit',
+        day: 'numeric',
+        month: 'short',
+        year: 'numeric',
+      })
+    }
     const filteredBookings = computed(() => {
       switch (activeFilter.value) {
         case 'active':
@@ -412,12 +415,12 @@ const closeModal = () => {
       cancelBooking,
       getStatusText,
       formatDate,
-    selectedBooking,
-    showBookingDetails,
-    closeModal,
-    formatDateTime,
+      selectedBooking,
+      showBookingDetails,
+      closeModal,
+      formatDateTime,
     }
-  }
+  },
 }
 </script>
 
@@ -529,9 +532,15 @@ const closeModal = () => {
   border-radius: 15px;
 }
 
-.stat-icon.total { background: rgba(102, 126, 234, 0.2); }
-.stat-icon.active { background: rgba(34, 197, 94, 0.2); }
-.stat-icon.canceled { background: rgba(239, 68, 68, 0.2); }
+.stat-icon.total {
+  background: rgba(102, 126, 234, 0.2);
+}
+.stat-icon.active {
+  background: rgba(34, 197, 94, 0.2);
+}
+.stat-icon.canceled {
+  background: rgba(239, 68, 68, 0.2);
+}
 
 .stat-info h3 {
   font-size: 2.2rem;
@@ -803,8 +812,12 @@ const closeModal = () => {
 }
 
 @keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
 }
 
 .error-icon,
@@ -835,25 +848,25 @@ const closeModal = () => {
     flex-direction: column;
     gap: 20px;
   }
-  
+
   .header-left {
     flex-direction: column;
     text-align: center;
     gap: 15px;
   }
-  
+
   .stats-grid {
     grid-template-columns: 1fr;
   }
-  
+
   .bookings-grid {
     grid-template-columns: 1fr;
   }
-  
+
   .info-row {
     grid-template-columns: 1fr;
   }
-  
+
   .filter-tabs {
     flex-direction: column;
   }

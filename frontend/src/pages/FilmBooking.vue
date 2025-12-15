@@ -139,6 +139,12 @@ export default {
     Navbar,
   },
   setup() {
+    const API_BASE = import.meta.env.VITE_API_URL
+
+    if (!API_BASE) {
+      console.error('VITE_API_URL is not defined')
+    }
+
     const route = useRoute()
     const router = useRouter()
     const store = useFilmsStore()
@@ -180,7 +186,7 @@ export default {
         }
 
         // Загружаем залы
-        const hallsResponse = await fetch('http://localhost:8000/halls')
+        const hallsResponse = await fetch(`${API_BASE}/halls`)
         if (hallsResponse.ok) {
           halls.value = await hallsResponse.json()
         }
@@ -210,7 +216,7 @@ export default {
     const loadBookedSeats = async () => {
       try {
         console.log('🔄 Loading booked seats for session:', session.value.id)
-        const response = await fetch(`http://localhost:8000/bookings/${session.value.id}/bookings`)
+        const response = await fetch(`${API_BASE}/bookings/${session.value.id}/bookings`)
 
         if (response.ok) {
           const bookings = await response.json()
@@ -362,7 +368,7 @@ export default {
 
         // Создаем бронирования для каждого выбранного места
         const bookingPromises = selectedSeats.value.map((seat) =>
-          fetch('http://localhost:8000/bookings', {
+          fetch(`${API_BASE}/bookings`, {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
@@ -490,7 +496,7 @@ export default {
         const token = localStorage.getItem('token')
         if (!token) return 0
 
-        const response = await fetch('http://localhost:8000/bookings/me', {
+        const response = await fetch(`${API_BASE}/bookings/me`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },

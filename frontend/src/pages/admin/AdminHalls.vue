@@ -184,6 +184,11 @@ export default {
     Navbar,
   },
   setup() {
+    const API_BASE = import.meta.env.VITE_API_URL
+
+    if (!API_BASE) {
+      console.error('VITE_API_URL is not defined')
+    }
     const router = useRouter()
     const halls = ref([])
     const loading = ref(false)
@@ -231,7 +236,7 @@ export default {
       try {
         const token = localStorage.getItem('token')
 
-        const response = await fetch('http://localhost:8000/views/hall-usage', {
+        const response = await fetch(`${API_BASE}/views/hall-usage`, {
           headers: { Authorization: `Bearer ${token}` },
         })
 
@@ -250,7 +255,7 @@ export default {
       loading.value = true
       try {
         const token = localStorage.getItem('token')
-        const response = await fetch('http://localhost:8000/halls/', {
+        const response = await fetch(`${API_BASE}/halls/`, {
           method: 'POST',
           headers: {
             Authorization: `Bearer ${token}`,
@@ -310,7 +315,7 @@ export default {
       deletingHall.value = hallId
       try {
         const token = localStorage.getItem('token')
-        const response = await fetch(`http://localhost:8000/halls/${hallId}`, {
+        const response = await fetch(`${API_BASE}/halls/${hallId}`, {
           method: 'DELETE',
           headers: { Authorization: `Bearer ${token}` },
         })

@@ -1,7 +1,7 @@
 <template>
   <div class="admin-container">
     <Navbar />
-    
+
     <div class="admin-content">
       <!-- Заголовок с иконкой -->
       <div class="admin-header">
@@ -56,7 +56,7 @@
           <span class="btn-icon">+</span>
           Добавить сеанс
         </button>
-        
+
         <div class="filter-controls">
           <select v-model="dateFilter" class="filter-select">
             <option value="all">Все даты</option>
@@ -64,7 +64,7 @@
             <option value="week">Эта неделя</option>
             <option value="month">Этот месяц</option>
           </select>
-          
+
           <select v-model="hallFilter" class="filter-select">
             <option value="all">Все залы</option>
             <option v-for="hall in halls" :key="hall.id" :value="hall.id">
@@ -81,25 +81,24 @@
             <h3>🎬 Добавить новый сеанс</h3>
             <button class="close-btn" @click="showAddForm = false">×</button>
           </div>
-          
+
           <form @submit.prevent="addSession" class="session-form">
             <div class="form-grid">
               <div class="form-group">
                 <label>Фильм *</label>
                 <select v-model="newSession.film_id" required class="form-select">
                   <option value="">Выберите фильм</option>
-                  <option 
-                    v-for="film in activeFilms" 
-                    :key="film.id" 
+                  <option
+                    v-for="film in activeFilms"
+                    :key="film.id"
                     :value="film.id"
                     class="film-option"
                   >
                     {{ film.title }} ({{ film.duration }} мин, {{ film.rating }}★)
                   </option>
                 </select>
-                
               </div>
-              
+
               <div class="form-group">
                 <label>Зал *</label>
                 <select v-model="newSession.hall_id" required class="form-select">
@@ -112,26 +111,26 @@
 
               <div class="form-group">
                 <label>Дата и время *</label>
-                <input 
-                  v-model="newSession.start_time" 
-                  type="datetime-local" 
+                <input
+                  v-model="newSession.start_time"
+                  type="datetime-local"
                   required
                   class="form-input"
                   :min="minDateTime"
-                >
+                />
               </div>
-              
+
               <div class="form-group">
                 <label>Цена (BYN) *</label>
-                <input 
-                  v-model="newSession.price" 
-                  type="number" 
+                <input
+                  v-model="newSession.price"
+                  type="number"
                   placeholder="50"
                   min="1"
                   max="5000"
                   required
                   class="form-input"
-                >
+                />
               </div>
             </div>
 
@@ -152,7 +151,9 @@
                   </div>
                   <div class="preview-item">
                     <span class="preview-label">Время:</span>
-                    <span class="preview-value">{{ formatPreviewDateTime(newSession.start_time) }}</span>
+                    <span class="preview-value">{{
+                      formatPreviewDateTime(newSession.start_time)
+                    }}</span>
                   </div>
                   <div class="preview-item">
                     <span class="preview-label">Цена:</span>
@@ -167,18 +168,8 @@
             </div>
 
             <div class="form-actions">
-              <button 
-                type="button" 
-                @click="showAddForm = false" 
-                class="cancel-btn"
-              >
-                Отмена
-              </button>
-              <button 
-                type="submit" 
-                :disabled="loading || !isFormValid" 
-                class="submit-btn"
-              >
+              <button type="button" @click="showAddForm = false" class="cancel-btn">Отмена</button>
+              <button type="submit" :disabled="loading || !isFormValid" class="submit-btn">
                 {{ loading ? 'Добавление...' : 'Создать сеанс' }}
               </button>
             </div>
@@ -197,35 +188,35 @@
           <div class="error-icon">⚠️</div>
           <h3>Ошибка загрузки</h3>
           <p>{{ error }}</p>
-          <button @click="loadSessions" class="retry-btn">
-            Попробовать снова
-          </button>
+          <button @click="loadSessions" class="retry-btn">Попробовать снова</button>
         </div>
 
         <div v-else-if="filteredSessions.length === 0" class="empty-state">
           <div class="empty-icon">🎬</div>
           <h3>Сеансы не найдены</h3>
-          <p>{{ hasFilters ? 'Попробуйте изменить фильтры' : 'Добавьте первый сеанс в систему' }}</p>
+          <p>
+            {{ hasFilters ? 'Попробуйте изменить фильтры' : 'Добавьте первый сеанс в систему' }}
+          </p>
           <button v-if="!hasFilters" @click="showAddForm = true" class="add-first-btn">
             Добавить сеанс
           </button>
         </div>
 
         <div v-else class="sessions-grid">
-          <div 
-            v-for="session in filteredSessions" 
-            :key="session.id" 
+          <div
+            v-for="session in filteredSessions"
+            :key="session.id"
             class="session-card"
-            :class="{ 'upcoming': isUpcoming(session.start_time) }"
+            :class="{ upcoming: isUpcoming(session.start_time) }"
           >
             <div class="session-header">
               <div class="film-poster">
-                <img 
-                  v-if="getFilmImage(session.film_id)" 
-                  :src="getFilmImage(session.film_id)" 
+                <img
+                  v-if="getFilmImage(session.film_id)"
+                  :src="getFilmImage(session.film_id)"
                   :alt="getFilmTitle(session.film_id)"
                   class="poster-img"
-                >
+                />
                 <div v-else class="poster-placeholder">🎬</div>
               </div>
               <div class="session-title-section">
@@ -248,7 +239,7 @@
                     <div class="detail-value">{{ formatDateTime(session.start_time) }}</div>
                   </div>
                 </div>
-                
+
                 <div class="detail-item">
                   <div class="detail-icon">🏛️</div>
                   <div class="detail-info">
@@ -266,7 +257,7 @@
                     <div class="detail-value price">{{ session.price }} BYN</div>
                   </div>
                 </div>
-                
+
                 <div class="detail-item">
                   <div class="detail-icon">💺</div>
                   <div class="detail-info">
@@ -282,15 +273,13 @@
             <!-- Прогресс бар занятости -->
             <div class="occupancy-progress">
               <div class="progress-bar">
-                <div 
-                  class="progress-fill" 
+                <div
+                  class="progress-fill"
                   :style="{ width: getOccupancyPercent(session) + '%' }"
                   :class="getOccupancyClass(session)"
                 ></div>
               </div>
-              <div class="progress-label">
-                {{ getOccupancyPercent(session) }}% занято
-              </div>
+              <div class="progress-label">{{ getOccupancyPercent(session) }}% занято</div>
             </div>
 
             <!-- Статус сеанса -->
@@ -298,14 +287,12 @@
               <span class="status-badge" :class="getSessionStatus(session)">
                 {{ getSessionStatusText(session) }}
               </span>
-              <span class="revenue">
-                Потенциал: {{ calculateSessionRevenue(session) }} BYN
-              </span>
+              <span class="revenue"> Потенциал: {{ calculateSessionRevenue(session) }} BYN </span>
             </div>
 
             <!-- Действия -->
             <div class="card-actions">
-              <button 
+              <button
                 @click="deleteSession(session.id)"
                 class="action-btn delete"
                 :disabled="deletingSession === session.id"
@@ -329,9 +316,14 @@ import Navbar from '@/components/Layout/Navbar.vue'
 export default {
   name: 'AdminSessions',
   components: {
-    Navbar
+    Navbar,
   },
   setup() {
+    const API_BASE = import.meta.env.VITE_API_URL
+
+    if (!API_BASE) {
+      console.error('VITE_API_URL is not defined')
+    }
     const router = useRouter()
     const sessions = ref([])
     const films = ref([])
@@ -342,33 +334,35 @@ export default {
     const deletingSession = ref(null)
     const dateFilter = ref('all')
     const hallFilter = ref('all')
-    
+
     const newSession = ref({
       film_id: '',
       hall_id: '',
       start_time: '',
-      price: ''
+      price: '',
     })
 
     // Computed свойства
     const activeFilms = computed(() => {
-      return films.value.filter(film => film.is_active)
+      return films.value.filter((film) => film.is_active)
     })
 
     const selectedFilm = computed(() => {
-      return films.value.find(f => f.id === parseInt(newSession.value.film_id))
+      return films.value.find((f) => f.id === parseInt(newSession.value.film_id))
     })
 
     const selectedHall = computed(() => {
-      return halls.value.find(h => h.id === parseInt(newSession.value.hall_id))
+      return halls.value.find((h) => h.id === parseInt(newSession.value.hall_id))
     })
 
     const isFormValid = computed(() => {
-      return newSession.value.film_id && 
-             newSession.value.hall_id && 
-             newSession.value.start_time && 
-             newSession.value.price && 
-             newSession.value.price >= 0
+      return (
+        newSession.value.film_id &&
+        newSession.value.hall_id &&
+        newSession.value.start_time &&
+        newSession.value.price &&
+        newSession.value.price >= 0
+      )
     })
 
     const isSessionPreviewValid = computed(() => {
@@ -376,7 +370,7 @@ export default {
     })
 
     const totalRevenue = computed(() => {
-      return sessions.value.reduce((sum, session) => sum + (session.price * session.total_seats), 0)
+      return sessions.value.reduce((sum, session) => sum + session.price * session.total_seats, 0)
     })
 
     const occupancyRate = computed(() => {
@@ -389,34 +383,34 @@ export default {
 
     const upcomingSessionsCount = computed(() => {
       const now = new Date()
-      return sessions.value.filter(session => new Date(session.start_time) > now).length
+      return sessions.value.filter((session) => new Date(session.start_time) > now).length
     })
 
     const filteredSessions = computed(() => {
       let filtered = sessions.value
-      
+
       // Фильтр по дате
       const now = new Date()
       switch (dateFilter.value) {
         case 'today':
           const today = new Date().toDateString()
-          filtered = filtered.filter(s => new Date(s.start_time).toDateString() === today)
+          filtered = filtered.filter((s) => new Date(s.start_time).toDateString() === today)
           break
         case 'week':
           const weekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000)
-          filtered = filtered.filter(s => new Date(s.start_time) >= weekAgo)
+          filtered = filtered.filter((s) => new Date(s.start_time) >= weekAgo)
           break
         case 'month':
           const monthAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000)
-          filtered = filtered.filter(s => new Date(s.start_time) >= monthAgo)
+          filtered = filtered.filter((s) => new Date(s.start_time) >= monthAgo)
           break
       }
-      
+
       // Фильтр по залу
       if (hallFilter.value !== 'all') {
-        filtered = filtered.filter(s => s.hall_id === parseInt(hallFilter.value))
+        filtered = filtered.filter((s) => s.hall_id === parseInt(hallFilter.value))
       }
-      
+
       // Сортировка по дате (сначала ближайшие)
       return filtered.sort((a, b) => new Date(a.start_time) - new Date(b.start_time))
     })
@@ -433,32 +427,32 @@ export default {
 
     // Методы
     const getFilmTitle = (filmId) => {
-      const film = films.value.find(f => f.id === filmId)
+      const film = films.value.find((f) => f.id === filmId)
       return film ? film.title : 'Неизвестный фильм'
     }
 
     const getFilmGenre = (filmId) => {
-      const film = films.value.find(f => f.id === filmId)
+      const film = films.value.find((f) => f.id === filmId)
       return film ? film.genre : 'Неизвестно'
     }
 
     const getFilmDuration = (filmId) => {
-      const film = films.value.find(f => f.id === filmId)
+      const film = films.value.find((f) => f.id === filmId)
       return film ? film.duration : '?'
     }
 
     const getFilmRating = (filmId) => {
-      const film = films.value.find(f => f.id === filmId)
+      const film = films.value.find((f) => f.id === filmId)
       return film ? film.rating : '?'
     }
 
     const getFilmImage = (filmId) => {
-      const film = films.value.find(f => f.id === filmId)
+      const film = films.value.find((f) => f.id === filmId)
       return film?.image_url || null
     }
 
     const getHallName = (hallId) => {
-      const hall = halls.value.find(h => h.id === hallId)
+      const hall = halls.value.find((h) => h.id === hallId)
       return hall ? hall.name : 'Неизвестный зал'
     }
 
@@ -469,7 +463,7 @@ export default {
         month: 'long',
         year: 'numeric',
         hour: '2-digit',
-        minute: '2-digit'
+        minute: '2-digit',
       })
     }
 
@@ -481,7 +475,7 @@ export default {
         day: 'numeric',
         month: 'long',
         hour: '2-digit',
-        minute: '2-digit'
+        minute: '2-digit',
       })
     }
 
@@ -490,7 +484,9 @@ export default {
     }
 
     const getOccupancyPercent = (session) => {
-      return Math.round(((session.total_seats - session.available_seats) / session.total_seats) * 100)
+      return Math.round(
+        ((session.total_seats - session.available_seats) / session.total_seats) * 100
+      )
     }
 
     const getOccupancyClass = (session) => {
@@ -511,9 +507,12 @@ export default {
     const getSessionStatusText = (session) => {
       const status = getSessionStatus(session)
       switch (status) {
-        case 'completed': return 'Завершен'
-        case 'high-demand': return 'Высокий спрос'
-        default: return 'Предстоящий'
+        case 'completed':
+          return 'Завершен'
+        case 'high-demand':
+          return 'Высокий спрос'
+        default:
+          return 'Предстоящий'
       }
     }
 
@@ -527,10 +526,10 @@ export default {
       error.value = ''
       try {
         const token = localStorage.getItem('token')
-        const response = await fetch('http://localhost:8000/sessions/', {
-          headers: { 'Authorization': `Bearer ${token}` }
+        const response = await fetch(`${API_BASE}/sessions/`, {
+          headers: { Authorization: `Bearer ${token}` },
         })
-        
+
         if (response.ok) {
           sessions.value = await response.json()
         } else {
@@ -546,10 +545,10 @@ export default {
     const loadFilms = async () => {
       try {
         const token = localStorage.getItem('token')
-        const response = await fetch('http://localhost:8000/films/', {
-          headers: { 'Authorization': `Bearer ${token}` }
+        const response = await fetch(`${API_BASE}/films/`, {
+          headers: { Authorization: `Bearer ${token}` },
         })
-        
+
         if (response.ok) {
           films.value = await response.json()
         }
@@ -561,10 +560,9 @@ export default {
     const loadHalls = async () => {
       try {
         const token = localStorage.getItem('token')
-        const response = await fetch('http://localhost:8000/halls/', {
-          headers: { 'Authorization': `Bearer ${token}` }
+        const response = await fetch(`${API_BASE}/halls/`, {
+          headers: { Authorization: `Bearer ${token}` },
         })
-        
         if (response.ok) {
           halls.value = await response.json()
         }
@@ -577,22 +575,22 @@ export default {
       loading.value = true
       try {
         const token = localStorage.getItem('token')
-        
+
         const sessionData = {
           ...newSession.value,
           start_time: new Date(newSession.value.start_time).toISOString(),
           film_id: parseInt(newSession.value.film_id),
           hall_id: parseInt(newSession.value.hall_id),
-          price: parseFloat(newSession.value.price)
+          price: parseFloat(newSession.value.price),
         }
 
-        const response = await fetch('http://localhost:8000/sessions/', {
+        const response = await fetch(`${API_BASE}/sessions/`, {
           method: 'POST',
-          headers: { 
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json'
+          headers: {
+            Authorization: `Bearer ${token}`,
+            'Content-Type': 'application/json',
           },
-          body: JSON.stringify(sessionData)
+          body: JSON.stringify(sessionData),
         })
 
         if (response.ok) {
@@ -611,46 +609,51 @@ export default {
     }
 
     const deleteSession = async (sessionId) => {
-  if (!confirm('Вы уверены, что хотите удалить этот сеанс? Все связанные бронирования также будут удалены.')) return
-  
-  deletingSession.value = sessionId
-  try {
-    const token = localStorage.getItem('token')
-    const response = await fetch(`http://localhost:8000/sessions/${sessionId}`, {
-      method: 'DELETE',
-      headers: { 'Authorization': `Bearer ${token}` }
-    })
+      if (
+        !confirm(
+          'Вы уверены, что хотите удалить этот сеанс? Все связанные бронирования также будут удалены.'
+        )
+      )
+        return
 
-    if (response.ok) {
-      await loadSessions()
-    } else {
-      const errorData = await response.json()
-      let errorMessage = errorData.detail || 'Ошибка удаления сеанса'
-      
-      // Быстрый перевод ошибок
-      if (errorMessage.includes('Cannot delete session with active bookings')) {
-        errorMessage = 'Нельзя удалить сеанс с активными бронированиями'
-      } else if (errorMessage.includes('Session') && errorMessage.includes('not found')) {
-        errorMessage = 'Сеанс не найден'
-      } else if (errorMessage.includes('not found')) {
-        errorMessage = 'Сеанс не найден'
+      deletingSession.value = sessionId
+      try {
+        const token = localStorage.getItem('token')
+        const response = await fetch(`${API_BASE}/sessions/${sessionId}`, {
+          method: 'DELETE',
+          headers: { Authorization: `Bearer ${token}` },
+        })
+
+        if (response.ok) {
+          await loadSessions()
+        } else {
+          const errorData = await response.json()
+          let errorMessage = errorData.detail || 'Ошибка удаления сеанса'
+
+          // Быстрый перевод ошибок
+          if (errorMessage.includes('Cannot delete session with active bookings')) {
+            errorMessage = 'Нельзя удалить сеанс с активными бронированиями'
+          } else if (errorMessage.includes('Session') && errorMessage.includes('not found')) {
+            errorMessage = 'Сеанс не найден'
+          } else if (errorMessage.includes('not found')) {
+            errorMessage = 'Сеанс не найден'
+          }
+
+          alert(errorMessage)
+        }
+      } catch (err) {
+        let errorMessage = err.message || 'Ошибка удаления сеанса'
+
+        // Перевод для ошибок сети и т.д.
+        if (errorMessage.includes('Failed to fetch')) {
+          errorMessage = 'Ошибка соединения с сервером'
+        }
+
+        alert(errorMessage)
+      } finally {
+        deletingSession.value = null
       }
-      
-      alert(errorMessage)
     }
-  } catch (err) {
-    let errorMessage = err.message || 'Ошибка удаления сеанса'
-    
-    // Перевод для ошибок сети и т.д.
-    if (errorMessage.includes('Failed to fetch')) {
-      errorMessage = 'Ошибка соединения с сервером'
-    }
-    
-    alert(errorMessage)
-  } finally {
-    deletingSession.value = null
-  }
-}
     onMounted(() => {
       const userInfo = JSON.parse(localStorage.getItem('userInfo') || '{}')
       if (userInfo.role !== 'admin') {
@@ -700,9 +703,9 @@ export default {
       getOccupancyClass,
       getSessionStatus,
       getSessionStatusText,
-      calculateSessionRevenue
+      calculateSessionRevenue,
     }
-  }
+  },
 }
 </script>
 
@@ -1402,8 +1405,12 @@ export default {
 }
 
 @keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
 }
 
 .error-icon,
@@ -1479,46 +1486,46 @@ export default {
     margin: 10px;
     max-height: calc(100vh - 20px);
   }
-  
+
   .modal-header {
     padding: 25px;
   }
-  
+
   .modal-header h3 {
     font-size: 1.5rem;
   }
-  
+
   .session-form {
     padding: 25px;
   }
-  
+
   .form-grid {
     gap: 25px;
   }
-  
+
   .form-select,
   .form-input {
     padding: 14px 16px;
     min-height: 52px;
     font-size: 1rem;
   }
-  
+
   .preview-details {
     grid-template-columns: 1fr;
     gap: 15px;
   }
-  
+
   .form-actions {
     flex-direction: column;
     gap: 15px;
   }
-  
+
   .cancel-btn,
   .submit-btn {
     width: 100%;
     min-width: auto;
   }
-  
+
   .session-preview {
     margin: 25px 0;
     padding: 20px;
@@ -1541,19 +1548,19 @@ export default {
   .preview-details {
     grid-template-columns: 1fr;
   }
-  
+
   .modal-header {
     padding: 20px;
   }
-  
+
   .session-form {
     padding: 20px;
   }
-  
+
   .form-grid {
     gap: 20px;
   }
-  
+
   .preview-film {
     flex-direction: column;
     gap: 10px;

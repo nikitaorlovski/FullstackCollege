@@ -1,7 +1,7 @@
 <template>
   <div class="admin-container">
     <Navbar />
-    
+
     <div class="admin-content">
       <!-- Заголовок с иконкой -->
       <div class="admin-header">
@@ -41,7 +41,6 @@
             <p>Активные фильмы</p>
           </div>
         </div>
-        
       </div>
 
       <!-- Панель действий -->
@@ -50,17 +49,13 @@
           <span class="btn-icon">+</span>
           Добавить фильм
         </button>
-        
+
         <div class="filter-controls">
           <div class="search-box">
-            <input 
-              v-model="searchQuery" 
-              placeholder="Поиск фильмов..." 
-              class="search-input"
-            >
+            <input v-model="searchQuery" placeholder="Поиск фильмов..." class="search-input" />
             <span class="search-icon">🔍</span>
           </div>
-          
+
           <select v-model="genreFilter" class="genre-filter">
             <option value="">Все жанры</option>
             <option v-for="genre in uniqueGenres" :key="genre" :value="genre">
@@ -83,18 +78,14 @@
             <h3>{{ isEditing ? '✏️ Редактировать фильм' : '🎬 Добавить новый фильм' }}</h3>
             <button class="close-btn" @click="closeModal">×</button>
           </div>
-          
+
           <form @submit.prevent="isEditing ? updateFilm() : addFilm()" class="film-form">
             <div class="form-grid">
               <div class="form-group">
                 <label>Название фильма *</label>
-                <input 
-                  v-model="currentFilm.title" 
-                  placeholder="Введите название"
-                  required
-                >
+                <input v-model="currentFilm.title" placeholder="Введите название" required />
               </div>
-              
+
               <div class="form-group">
                 <label>Жанр *</label>
                 <select v-model="currentFilm.genre" required class="genre-select">
@@ -104,52 +95,53 @@
                   </option>
                 </select>
               </div>
-              
+
               <div class="form-group">
                 <label>Длительность (мин) *</label>
-                <input 
-                  v-model="currentFilm.duration" 
-                  type="number" 
+                <input
+                  v-model="currentFilm.duration"
+                  type="number"
                   placeholder="120"
                   min="1"
                   max="500"
                   required
-                >
+                />
               </div>
-              
+
               <div class="form-group">
                 <label>Рейтинг *</label>
                 <div class="rating-input-container">
-                  <input 
-                    v-model="currentFilm.rating" 
-                    type="number" 
+                  <input
+                    v-model="currentFilm.rating"
+                    type="number"
                     step="0.1"
                     min="0"
                     max="10"
                     placeholder="8.5"
                     required
                     class="rating-input"
-                  >
+                  />
                   <div class="rating-visual">
                     <div class="rating-stars">
-                      <span 
-                        v-for="star in 10" 
+                      <span
+                        v-for="star in 10"
                         :key="star"
                         class="star"
                         :class="{ active: star <= Math.round(currentFilm.rating) }"
                         @click="currentFilm.rating = star"
-                      >★</span>
+                        >★</span
+                      >
                     </div>
                     <span class="rating-value">{{ currentFilm.rating }}/10</span>
                   </div>
                 </div>
               </div>
             </div>
-            
+
             <div class="form-group full-width">
               <label>Описание фильма</label>
-              <textarea 
-                v-model="currentFilm.description" 
+              <textarea
+                v-model="currentFilm.description"
                 placeholder="Опишите сюжет фильма..."
                 rows="4"
               ></textarea>
@@ -161,7 +153,7 @@
             <!-- Загрузка изображения -->
             <div class="form-group full-width">
               <label>Постер фильма</label>
-              <div 
+              <div
                 class="image-upload-area"
                 @click="triggerFileInput"
                 @drop="handleDrop"
@@ -174,48 +166,38 @@
                   <small>Поддерживаются JPG, PNG, WebP (макс. 5MB)</small>
                 </div>
                 <div v-else class="image-preview">
-                  <img :src="imagePreview || currentFilm.image_url" alt="Preview" class="preview-image">
+                  <img
+                    :src="imagePreview || currentFilm.image_url"
+                    alt="Preview"
+                    class="preview-image"
+                  />
                   <button type="button" @click.stop="removeImage" class="remove-image-btn">
                     ×
                   </button>
                 </div>
-                <input 
+                <input
                   ref="fileInput"
-                  type="file" 
+                  type="file"
                   @change="handleImageUpload"
                   accept="image/jpeg,image/png,image/webp"
                   class="file-input"
-                >
+                />
               </div>
             </div>
 
             <div class="form-group full-width" v-if="isEditing">
               <label class="checkbox-label">
-                <input 
-                  type="checkbox" 
-                  v-model="currentFilm.is_active"
-                  class="checkbox-input"
-                >
+                <input type="checkbox" v-model="currentFilm.is_active" class="checkbox-input" />
                 <span class="checkmark"></span>
                 Активный фильм (отображается в расписании)
               </label>
             </div>
 
             <div class="form-actions">
-              <button 
-                type="button" 
-                @click="closeModal" 
-                class="cancel-btn"
-              >
-                Отмена
-              </button>
-              <button 
-                type="submit" 
-                :disabled="loading || !isFormValid" 
-                class="submit-btn"
-              >
+              <button type="button" @click="closeModal" class="cancel-btn">Отмена</button>
+              <button type="submit" :disabled="loading || !isFormValid" class="submit-btn">
                 <span v-if="loading" class="btn-spinner"></span>
-                {{ loading ? 'Сохранение...' : (isEditing ? 'Обновить' : 'Добавить фильм') }}
+                {{ loading ? 'Сохранение...' : isEditing ? 'Обновить' : 'Добавить фильм' }}
               </button>
             </div>
           </form>
@@ -233,35 +215,37 @@
           <div class="error-icon">⚠️</div>
           <h3>Ошибка загрузки</h3>
           <p>{{ error }}</p>
-          <button @click="loadFilms" class="retry-btn">
-            Попробовать снова
-          </button>
+          <button @click="loadFilms" class="retry-btn">Попробовать снова</button>
         </div>
 
         <div v-else-if="filteredFilms.length === 0" class="empty-state">
           <div class="empty-icon">🎭</div>
           <h3>Фильмы не найдены</h3>
-          <p>{{ hasActiveFilters ? 'Попробуйте изменить фильтры' : 'Добавьте первый фильм в систему' }}</p>
+          <p>
+            {{
+              hasActiveFilters ? 'Попробуйте изменить фильтры' : 'Добавьте первый фильм в систему'
+            }}
+          </p>
           <button v-if="!hasActiveFilters" @click="openAddForm" class="add-first-btn">
             Добавить фильм
           </button>
         </div>
 
         <div v-else class="films-grid">
-          <div 
-            v-for="film in filteredFilms" 
-            :key="film.id" 
+          <div
+            v-for="film in filteredFilms"
+            :key="film.id"
             class="film-card"
             :class="{ inactive: !film.is_active }"
           >
             <!-- Изображение фильма -->
             <div class="film-image">
-              <img 
-                v-if="film.image_url" 
-                :src="film.image_url" 
+              <img
+                v-if="film.image_url"
+                :src="film.image_url"
                 :alt="film.title"
                 class="poster-image"
-              >
+              />
               <div v-else class="poster-placeholder">
                 <span class="placeholder-icon">🎬</span>
               </div>
@@ -282,11 +266,11 @@
               <div class="film-genre">
                 <span class="genre-badge">{{ film.genre }}</span>
               </div>
-              
+
               <p class="film-description" v-if="film.description">
                 {{ truncateDescription(film.description) }}
               </p>
-              
+
               <div class="film-meta">
                 <div class="meta-item">
                   <span class="meta-icon">⏱️</span>
@@ -301,7 +285,7 @@
 
             <!-- Действия -->
             <div class="card-actions">
-              <button 
+              <button
                 @click="viewSessions(film.id)"
                 class="action-btn sessions"
                 title="Посмотреть сеансы"
@@ -309,15 +293,11 @@
                 <span class="btn-icon">🎫</span>
                 Сеансы
               </button>
-              <button 
-                @click="editFilm(film)"
-                class="action-btn edit"
-                title="Редактировать"
-              >
+              <button @click="editFilm(film)" class="action-btn edit" title="Редактировать">
                 <span class="btn-icon">✏️</span>
                 Изменить
               </button>
-              <button 
+              <button
                 @click="toggleFilmStatus(film)"
                 class="action-btn status"
                 :title="film.is_active ? 'Деактивировать' : 'Активировать'"
@@ -325,7 +305,7 @@
                 <span class="btn-icon">{{ film.is_active ? '⏸️' : '▶️' }}</span>
                 {{ film.is_active ? 'Скрыть' : 'Показать' }}
               </button>
-              <button 
+              <button
                 @click="deleteFilm(film.id)"
                 class="action-btn delete"
                 :disabled="deletingFilm === film.id"
@@ -350,9 +330,14 @@ import Navbar from '@/components/Layout/Navbar.vue'
 export default {
   name: 'AdminFilms',
   components: {
-    Navbar
+    Navbar,
   },
   setup() {
+    const API_BASE = import.meta.env.VITE_API_URL
+
+    if (!API_BASE) {
+      console.error('VITE_API_URL is not defined')
+    }
     const router = useRouter()
     const films = ref([])
     const loading = ref(false)
@@ -366,18 +351,29 @@ export default {
     const fileInput = ref(null)
     const imagePreview = ref(null)
     const customGenre = ref('')
-    
+
     const popularGenres = [
-    "Боевик", "Комедия", "Драма", "Триллер", "Фэнтези",
-    "Фантастика", "Ужасы", "Романтика", "Приключения", 
-    "Детектив", "Мультфильм", "Документальный", "Исторический",
-    "Биография", "Семейный"
-]
+      'Боевик',
+      'Комедия',
+      'Драма',
+      'Триллер',
+      'Фэнтези',
+      'Фантастика',
+      'Ужасы',
+      'Романтика',
+      'Приключения',
+      'Детектив',
+      'Мультфильм',
+      'Документальный',
+      'Исторический',
+      'Биография',
+      'Семейный',
+    ]
     const openAddForm = () => {
-  isEditing.value = false
-  resetForm()
-  showModal.value = true
-}
+      isEditing.value = false
+      resetForm()
+      showModal.value = true
+    }
 
     const currentFilm = ref({
       title: '',
@@ -385,7 +381,7 @@ export default {
       duration: '',
       rating: '',
       description: '',
-      is_active: true
+      is_active: true,
     })
 
     const loadFilms = async () => {
@@ -393,10 +389,10 @@ export default {
       error.value = ''
       try {
         const token = localStorage.getItem('token')
-        const response = await fetch('http://localhost:8000/films/', {
-          headers: { 'Authorization': `Bearer ${token}` }
+        const response = await fetch(`${API_BASE}/films/`, {
+          headers: { Authorization: `Bearer ${token}` },
         })
-        
+
         if (response.ok) {
           films.value = await response.json()
         } else {
@@ -410,157 +406,168 @@ export default {
     }
 
     const addFilm = async () => {
-  loading.value = true
-  try {
-    const token = localStorage.getItem('token')
-    const formData = new FormData()
-    
-    // Добавляем текстовые поля
-    formData.append('title', currentFilm.value.title)
-    formData.append('genre', currentFilm.value.genre === 'other' ? customGenre.value : currentFilm.value.genre)
-    formData.append('duration', parseInt(currentFilm.value.duration))
-    formData.append('rating', parseFloat(currentFilm.value.rating))
-    formData.append('description', currentFilm.value.description || '')
-    
-    // Добавляем изображение если есть
-    if (fileInput.value?.files[0]) {
-      formData.append('image', fileInput.value.files[0])
-    }
+      loading.value = true
+      try {
+        const token = localStorage.getItem('token')
+        const formData = new FormData()
 
-    const response = await fetch('http://localhost:8000/films/', {
-      method: 'POST',
-      headers: { 'Authorization': `Bearer ${token}` },
-      body: formData
-    })
+        // Добавляем текстовые поля
+        formData.append('title', currentFilm.value.title)
+        formData.append(
+          'genre',
+          currentFilm.value.genre === 'other' ? customGenre.value : currentFilm.value.genre
+        )
+        formData.append('duration', parseInt(currentFilm.value.duration))
+        formData.append('rating', parseFloat(currentFilm.value.rating))
+        formData.append('description', currentFilm.value.description || '')
 
-    if (response.ok) {
-      showModal.value = false
-      resetForm()
-      await loadFilms()
-    } else {
-      const errorData = await response.json()
-      let errorMessage = errorData.detail || 'Ошибка добавления фильма'
-      
-      // Перевод ошибок на русский
-      if (errorMessage.includes('Rating must be between 0 and 10')) {
-        errorMessage = 'Рейтинг должен быть от 0 до 10'
-      } else if (errorMessage.includes('Duration must be positive')) {
-        errorMessage = 'Продолжительность должна быть положительной'
-      } else if (errorMessage.includes('Title is required')) {
-        errorMessage = 'Название фильма обязательно'
-      } else if (errorMessage.includes('Genre is required')) {
-        errorMessage = 'Жанр фильма обязателен'
-      } else if (errorMessage.includes('already exists')) {
-        errorMessage = 'Фильм с таким названием уже существует'
-      } else if (errorMessage.includes('rating') && errorMessage.includes('between')) {
-        errorMessage = 'Рейтинг должен быть от 0 до 10'
-      } else if (errorMessage.includes('duration') && errorMessage.includes('positive')) {
-        errorMessage = 'Продолжительность должна быть положительной'
-      } else if (errorMessage.includes('Unsupported image type') || response.status === 415) {
-    errorMessage = 'Неподдерживаемый формат изображения. Используйте JPG, PNG или WebP.'
-  }
-      
-      error.value = errorMessage
+        // Добавляем изображение если есть
+        if (fileInput.value?.files[0]) {
+          formData.append('image', fileInput.value.files[0])
+        }
+
+        const response = await fetch(`${API_BASE}/films/`, {
+          method: 'POST',
+          headers: { Authorization: `Bearer ${token}` },
+          body: formData,
+        })
+
+        if (response.ok) {
+          showModal.value = false
+          resetForm()
+          await loadFilms()
+        } else {
+          const errorData = await response.json()
+          let errorMessage = errorData.detail || 'Ошибка добавления фильма'
+
+          // Перевод ошибок на русский
+          if (errorMessage.includes('Rating must be between 0 and 10')) {
+            errorMessage = 'Рейтинг должен быть от 0 до 10'
+          } else if (errorMessage.includes('Duration must be positive')) {
+            errorMessage = 'Продолжительность должна быть положительной'
+          } else if (errorMessage.includes('Title is required')) {
+            errorMessage = 'Название фильма обязательно'
+          } else if (errorMessage.includes('Genre is required')) {
+            errorMessage = 'Жанр фильма обязателен'
+          } else if (errorMessage.includes('already exists')) {
+            errorMessage = 'Фильм с таким названием уже существует'
+          } else if (errorMessage.includes('rating') && errorMessage.includes('between')) {
+            errorMessage = 'Рейтинг должен быть от 0 до 10'
+          } else if (errorMessage.includes('duration') && errorMessage.includes('positive')) {
+            errorMessage = 'Продолжительность должна быть положительной'
+          } else if (errorMessage.includes('Unsupported image type') || response.status === 415) {
+            errorMessage = 'Неподдерживаемый формат изображения. Используйте JPG, PNG или WebP.'
+          }
+
+          error.value = errorMessage
+        }
+      } catch (err) {
+        let errorMessage = err.message || 'Ошибка добавления фильма'
+
+        // Перевод сетевых ошибок
+        if (errorMessage.includes('Failed to fetch')) {
+          errorMessage = 'Ошибка соединения с сервером'
+        }
+
+        error.value = errorMessage
+      } finally {
+        loading.value = false
+      }
     }
-  } catch (err) {
-    let errorMessage = err.message || 'Ошибка добавления фильма'
-    
-    // Перевод сетевых ошибок
-    if (errorMessage.includes('Failed to fetch')) {
-      errorMessage = 'Ошибка соединения с сервером'
-    }
-    
-    error.value = errorMessage
-  } finally {
-    loading.value = false
-  }
-}
 
     const updateFilm = async () => {
-  loading.value = true
-  try {
-    const token = localStorage.getItem('token')
-    const formData = new FormData()
-    
-    formData.append('title', currentFilm.value.title)
-    formData.append('genre', currentFilm.value.genre === 'other' ? customGenre.value : currentFilm.value.genre)
-    formData.append('duration', parseInt(currentFilm.value.duration))
-    formData.append('rating', parseFloat(currentFilm.value.rating))
-    formData.append('description', currentFilm.value.description || '')
-    formData.append('is_active', currentFilm.value.is_active.toString())
-    
-    // ⭐ ДОБАВЛЯЕМ ФЛАГ УДАЛЕНИЯ ИЗОБРАЖЕНИЯ С ПРОВЕРКОЙ
-    const shouldRemoveImage = currentFilm.value.shouldRemoveImage || false
-    formData.append('remove_image', shouldRemoveImage.toString())
-    
-    // Если загружаем новое изображение
-    if (fileInput.value?.files[0]) {
-      formData.append('image', fileInput.value.files[0])
-    }
+      loading.value = true
+      try {
+        const token = localStorage.getItem('token')
+        const formData = new FormData()
 
-    console.log('Обновление фильма:', {
-      title: currentFilm.value.title,
-      removeImage: shouldRemoveImage,
-      hasNewImage: !!fileInput.value?.files[0]
-    })
+        formData.append('title', currentFilm.value.title)
+        formData.append(
+          'genre',
+          currentFilm.value.genre === 'other' ? customGenre.value : currentFilm.value.genre
+        )
+        formData.append('duration', parseInt(currentFilm.value.duration))
+        formData.append('rating', parseFloat(currentFilm.value.rating))
+        formData.append('description', currentFilm.value.description || '')
+        formData.append('is_active', currentFilm.value.is_active.toString())
 
-    const response = await fetch(`http://localhost:8000/films/${currentFilm.value.id}`, {
-      method: 'PUT',
-      headers: { 'Authorization': `Bearer ${token}` },
-      body: formData
-    })
+        // ⭐ ДОБАВЛЯЕМ ФЛАГ УДАЛЕНИЯ ИЗОБРАЖЕНИЯ С ПРОВЕРКОЙ
+        const shouldRemoveImage = currentFilm.value.shouldRemoveImage || false
+        formData.append('remove_image', shouldRemoveImage.toString())
 
-    if (response.ok) {
-      showModal.value = false
-      resetForm()
-      await loadFilms()
-    } else {
-      const errorData = await response.json()
-      let errorMessage = errorData.detail || 'Ошибка обновления фильма'
-      
-      // Перевод ошибок на русский
-      if (errorMessage.includes('Rating must be between 0 and 10')) {
-        errorMessage = 'Рейтинг должен быть от 0 до 10'
-      } else if (errorMessage.includes('Duration must be positive')) {
-        errorMessage = 'Продолжительность должна быть положительной'
-      } else if (errorMessage.includes('Title is required')) {
-        errorMessage = 'Название фильма обязательно'
-      } else if (errorMessage.includes('Genre is required')) {
-        errorMessage = 'Жанр фильма обязателен'
-      } else if (errorMessage.includes('already exists')) {
-        errorMessage = 'Фильм с таким названием уже существует'
-      } else if (errorMessage.includes('rating') && errorMessage.includes('between')) {
-        errorMessage = 'Рейтинг должен быть от 0 до 10'
-      } else if (errorMessage.includes('duration') && errorMessage.includes('positive')) {
-        errorMessage = 'Продолжительность должна быть положительной'
-      } else if (errorMessage.includes('Unsupported image type') || response.status === 415) {
-    errorMessage = 'Неподдерживаемый формат изображения. Используйте JPG, PNG или WebP.'
-  }
-      
-      error.value = errorMessage
+        // Если загружаем новое изображение
+        if (fileInput.value?.files[0]) {
+          formData.append('image', fileInput.value.files[0])
+        }
+
+        console.log('Обновление фильма:', {
+          title: currentFilm.value.title,
+          removeImage: shouldRemoveImage,
+          hasNewImage: !!fileInput.value?.files[0],
+        })
+
+        const response = await fetch(`${API_BASE}/films/${currentFilm.value.id}`, {
+          method: 'PUT',
+          headers: { Authorization: `Bearer ${token}` },
+          body: formData,
+        })
+
+        if (response.ok) {
+          showModal.value = false
+          resetForm()
+          await loadFilms()
+        } else {
+          const errorData = await response.json()
+          let errorMessage = errorData.detail || 'Ошибка обновления фильма'
+
+          // Перевод ошибок на русский
+          if (errorMessage.includes('Rating must be between 0 and 10')) {
+            errorMessage = 'Рейтинг должен быть от 0 до 10'
+          } else if (errorMessage.includes('Duration must be positive')) {
+            errorMessage = 'Продолжительность должна быть положительной'
+          } else if (errorMessage.includes('Title is required')) {
+            errorMessage = 'Название фильма обязательно'
+          } else if (errorMessage.includes('Genre is required')) {
+            errorMessage = 'Жанр фильма обязателен'
+          } else if (errorMessage.includes('already exists')) {
+            errorMessage = 'Фильм с таким названием уже существует'
+          } else if (errorMessage.includes('rating') && errorMessage.includes('between')) {
+            errorMessage = 'Рейтинг должен быть от 0 до 10'
+          } else if (errorMessage.includes('duration') && errorMessage.includes('positive')) {
+            errorMessage = 'Продолжительность должна быть положительной'
+          } else if (errorMessage.includes('Unsupported image type') || response.status === 415) {
+            errorMessage = 'Неподдерживаемый формат изображения. Используйте JPG, PNG или WebP.'
+          }
+
+          error.value = errorMessage
+        }
+      } catch (err) {
+        let errorMessage = err.message || 'Ошибка обновления фильма'
+
+        if (errorMessage.includes('Failed to fetch')) {
+          errorMessage = 'Ошибка соединения с сервером'
+        }
+
+        error.value = errorMessage
+      } finally {
+        loading.value = false
+      }
     }
-  } catch (err) {
-    let errorMessage = err.message || 'Ошибка обновления фильма'
-    
-    if (errorMessage.includes('Failed to fetch')) {
-      errorMessage = 'Ошибка соединения с сервером'
-    }
-    
-    error.value = errorMessage
-  } finally {
-    loading.value = false
-  }
-}
 
     const deleteFilm = async (filmId) => {
-      if (!confirm('Вы уверены, что хотите удалить этот фильм? Все связанные сеансы также будут удалены.')) return
-      
+      if (
+        !confirm(
+          'Вы уверены, что хотите удалить этот фильм? Все связанные сеансы также будут удалены.'
+        )
+      )
+        return
+
       deletingFilm.value = filmId
       try {
         const token = localStorage.getItem('token')
-        const response = await fetch(`http://localhost:8000/films/${filmId}`, {
+        const response = await fetch(`${API_BASE}/films/${filmId}`, {
           method: 'DELETE',
-          headers: { 'Authorization': `Bearer ${token}` }
+          headers: { Authorization: `Bearer ${token}` },
         })
 
         if (response.ok) {
@@ -586,10 +593,10 @@ export default {
         formData.append('description', film.description || '')
         formData.append('is_active', (!film.is_active).toString())
 
-        const response = await fetch(`http://localhost:8000/films/${film.id}`, {
+        const response = await fetch(`${API_BASE}/films/${film.id}`, {
           method: 'PUT',
-          headers: { 'Authorization': `Bearer ${token}` },
-          body: formData
+          headers: { Authorization: `Bearer ${token}` },
+          body: formData,
         })
 
         if (response.ok) {
@@ -603,106 +610,106 @@ export default {
     }
 
     const editFilm = (film) => {
-  isEditing.value = true
-  currentFilm.value = { 
-    ...film,
-    shouldRemoveImage: false // ⭐ СБРАСЫВАЕМ ПРИ РЕДАКТИРОВАНИИ
-  }
-  imagePreview.value = null
-  customGenre.value = popularGenres.includes(film.genre) ? '' : film.genre
-  currentFilm.value.genre = popularGenres.includes(film.genre) ? film.genre : 'other'
-  showModal.value = true
-}
+      isEditing.value = true
+      currentFilm.value = {
+        ...film,
+        shouldRemoveImage: false, // ⭐ СБРАСЫВАЕМ ПРИ РЕДАКТИРОВАНИИ
+      }
+      imagePreview.value = null
+      customGenre.value = popularGenres.includes(film.genre) ? '' : film.genre
+      currentFilm.value.genre = popularGenres.includes(film.genre) ? film.genre : 'other'
+      showModal.value = true
+    }
 
     const viewSessions = (filmId) => {
       router.push(`/admin/sessions?film=${filmId}`)
     }
 
     const handleImageUpload = (event) => {
-  const file = event.target.files[0]
-  if (file) {
-    // Проверка размера файла
-    if (file.size > 5 * 1024 * 1024) {
-      error.value = 'Файл слишком большой. Максимальный размер: 5MB'
-      fileInput.value.value = ''
-      return
+      const file = event.target.files[0]
+      if (file) {
+        // Проверка размера файла
+        if (file.size > 5 * 1024 * 1024) {
+          error.value = 'Файл слишком большой. Максимальный размер: 5MB'
+          fileInput.value.value = ''
+          return
+        }
+
+        // Проверка типа файла
+        const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp']
+        if (!allowedTypes.includes(file.type)) {
+          error.value = 'Неподдерживаемый формат изображения. Используйте JPG, PNG или WebP.'
+          fileInput.value.value = ''
+          return
+        }
+
+        // Проверка расширения файла (дополнительная проверка)
+        const fileName = file.name.toLowerCase()
+        const allowedExtensions = ['.jpg', '.jpeg', '.png', '.webp']
+        const hasValidExtension = allowedExtensions.some((ext) => fileName.endsWith(ext))
+
+        if (!hasValidExtension) {
+          error.value = 'Неподдерживаемый формат файла. Используйте JPG, PNG или WebP.'
+          fileInput.value.value = ''
+          return
+        }
+
+        // Если все проверки пройдены, загружаем превью
+        const reader = new FileReader()
+        reader.onload = (e) => {
+          imagePreview.value = e.target.result
+          error.value = '' // Очищаем ошибку при успешной загрузке
+        }
+        reader.onerror = () => {
+          error.value = 'Ошибка чтения файла'
+          fileInput.value.value = ''
+        }
+        reader.readAsDataURL(file)
+      }
     }
-    
-    // Проверка типа файла
-    const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp']
-    if (!allowedTypes.includes(file.type)) {
-      error.value = 'Неподдерживаемый формат изображения. Используйте JPG, PNG или WebP.'
-      fileInput.value.value = ''
-      return
-    }
-    
-    // Проверка расширения файла (дополнительная проверка)
-    const fileName = file.name.toLowerCase()
-    const allowedExtensions = ['.jpg', '.jpeg', '.png', '.webp']
-    const hasValidExtension = allowedExtensions.some(ext => fileName.endsWith(ext))
-    
-    if (!hasValidExtension) {
-      error.value = 'Неподдерживаемый формат файла. Используйте JPG, PNG или WebP.'
-      fileInput.value.value = ''
-      return
-    }
-    
-    // Если все проверки пройдены, загружаем превью
-    const reader = new FileReader()
-    reader.onload = (e) => {
-      imagePreview.value = e.target.result
-      error.value = '' // Очищаем ошибку при успешной загрузке
-    }
-    reader.onerror = () => {
-      error.value = 'Ошибка чтения файла'
-      fileInput.value.value = ''
-    }
-    reader.readAsDataURL(file)
-  }
-}
 
     const handleDrop = (event) => {
-  event.preventDefault()
-  const files = event.dataTransfer.files
-  if (files.length > 0) {
-    fileInput.value.files = files
-    handleImageUpload({ target: fileInput.value })
-  }
-}
+      event.preventDefault()
+      const files = event.dataTransfer.files
+      if (files.length > 0) {
+        fileInput.value.files = files
+        handleImageUpload({ target: fileInput.value })
+      }
+    }
 
     const triggerFileInput = () => {
       fileInput.value?.click()
     }
 
     const removeImage = () => {
-  imagePreview.value = null
-  fileInput.value.value = ''
-  currentFilm.value.image_url = null
-  // ⭐ УБЕДИТЕСЬ ЧТО СВОЙСТВО СУЩЕСТВУЕТ
-  if (!currentFilm.value.hasOwnProperty('shouldRemoveImage')) {
-    currentFilm.value.shouldRemoveImage = true
-  } else {
-    currentFilm.value.shouldRemoveImage = true
-  }
-  console.log('Изображение помечено для удаления')
-}
+      imagePreview.value = null
+      fileInput.value.value = ''
+      currentFilm.value.image_url = null
+      // ⭐ УБЕДИТЕСЬ ЧТО СВОЙСТВО СУЩЕСТВУЕТ
+      if (!currentFilm.value.hasOwnProperty('shouldRemoveImage')) {
+        currentFilm.value.shouldRemoveImage = true
+      } else {
+        currentFilm.value.shouldRemoveImage = true
+      }
+      console.log('Изображение помечено для удаления')
+    }
     const resetForm = () => {
-  currentFilm.value = {
-    title: '',
-    genre: '',
-    duration: '',
-    rating: '',
-    description: '',
-    is_active: true,
-    shouldRemoveImage: false // ⭐ СБРАСЫВАЕМ ФЛАГ
-  }
-  imagePreview.value = null
-  customGenre.value = ''
-  if (fileInput.value) {
-    fileInput.value.value = ''
-  }
-  isEditing.value = false
-}
+      currentFilm.value = {
+        title: '',
+        genre: '',
+        duration: '',
+        rating: '',
+        description: '',
+        is_active: true,
+        shouldRemoveImage: false, // ⭐ СБРАСЫВАЕМ ФЛАГ
+      }
+      imagePreview.value = null
+      customGenre.value = ''
+      if (fileInput.value) {
+        fileInput.value.value = ''
+      }
+      isEditing.value = false
+    }
 
     const closeModal = () => {
       showModal.value = false
@@ -715,16 +722,12 @@ export default {
     }
 
     // Computed свойства
-    const highRatedFilms = computed(() => 
-      films.value.filter(film => film.rating >= 8)
-    )
+    const highRatedFilms = computed(() => films.value.filter((film) => film.rating >= 8))
 
-    const activeFilms = computed(() => 
-      films.value.filter(film => film.is_active)
-    )
+    const activeFilms = computed(() => films.value.filter((film) => film.is_active))
 
     const uniqueGenres = computed(() => {
-      const genres = films.value.map(film => film.genre)
+      const genres = films.value.map((film) => film.genre)
       return [...new Set(genres)].sort()
     })
 
@@ -733,11 +736,13 @@ export default {
     })
 
     const isFormValid = computed(() => {
-      return currentFilm.value.title && 
-             currentFilm.value.genre && 
-             currentFilm.value.duration && 
-             currentFilm.value.rating &&
-             (currentFilm.value.genre !== 'other' || customGenre.value)
+      return (
+        currentFilm.value.title &&
+        currentFilm.value.genre &&
+        currentFilm.value.duration &&
+        currentFilm.value.rating &&
+        (currentFilm.value.genre !== 'other' || customGenre.value)
+      )
     })
 
     const hasActiveFilters = computed(() => {
@@ -749,19 +754,20 @@ export default {
 
       if (searchQuery.value) {
         const query = searchQuery.value.toLowerCase()
-        filtered = filtered.filter(film => 
-          film.title.toLowerCase().includes(query) ||
-          film.genre.toLowerCase().includes(query) ||
-          (film.description && film.description.toLowerCase().includes(query))
+        filtered = filtered.filter(
+          (film) =>
+            film.title.toLowerCase().includes(query) ||
+            film.genre.toLowerCase().includes(query) ||
+            (film.description && film.description.toLowerCase().includes(query))
         )
       }
 
       if (genreFilter.value) {
-        filtered = filtered.filter(film => film.genre === genreFilter.value)
+        filtered = filtered.filter((film) => film.genre === genreFilter.value)
       }
 
       if (statusFilter.value !== 'all') {
-        filtered = filtered.filter(film => 
+        filtered = filtered.filter((film) =>
           statusFilter.value === 'active' ? film.is_active : !film.is_active
         )
       }
@@ -770,11 +776,14 @@ export default {
     })
 
     // Watchers
-    watch(() => currentFilm.value.genre, (newGenre) => {
-      if (newGenre !== 'other') {
-        customGenre.value = ''
+    watch(
+      () => currentFilm.value.genre,
+      (newGenre) => {
+        if (newGenre !== 'other') {
+          customGenre.value = ''
+        }
       }
-    })
+    )
 
     onMounted(() => {
       const userInfo = JSON.parse(localStorage.getItem('userInfo') || '{}')
@@ -820,9 +829,9 @@ export default {
       triggerFileInput,
       removeImage,
       closeModal,
-      truncateDescription
+      truncateDescription,
     }
-  }
+  },
 }
 </script>
 
@@ -1381,7 +1390,7 @@ export default {
   left: 0;
   right: 0;
   bottom: 0;
-  background: linear-gradient(to bottom, transparent 50%, rgba(0,0,0,0.8) 100%);
+  background: linear-gradient(to bottom, transparent 50%, rgba(0, 0, 0, 0.8) 100%);
   display: flex;
   justify-content: space-between;
   align-items: flex-end;
@@ -1540,8 +1549,12 @@ export default {
 }
 
 @keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
 }
 
 .error-icon,

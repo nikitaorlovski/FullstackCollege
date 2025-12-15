@@ -177,7 +177,7 @@ export default {
   },
   setup() {
     const router = useRouter()
-
+    const API_BASE = import.meta.env.VITE_API_URL
     const userInfo = ref({})
     const bookings = ref([])
     const loading = ref(false)
@@ -191,7 +191,7 @@ export default {
         const token = localStorage.getItem('token')
 
         const response = await fetch(
-          `http://localhost:8000/views/booking-details/${booking.booking_id || booking.id}`,
+          `${API_BASE}/views/booking-details/${booking.booking_id || booking.id}`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -293,7 +293,7 @@ export default {
           return
         }
 
-        const response = await fetch('http://localhost:8000/views/user-info', {
+        const response = await fetch(`${API_BASE}/views/user-info`, {
           headers: {
             Authorization: `Bearer ${token}`,
             'Content-Type': 'application/json',
@@ -335,7 +335,7 @@ export default {
           return
         }
 
-        const response = await fetch('http://localhost:8000/views/user-history', {
+        const response = await fetch(`${API_BASE}/views/user-history`, {
           headers: {
             Authorization: `Bearer ${token}`,
             'Content-Type': 'application/json',
@@ -373,7 +373,7 @@ export default {
 
       try {
         const token = localStorage.getItem('token')
-        const response = await fetch(`http://localhost:8000/bookings/${bookingId}/cancel`, {
+        const response = await fetch(`${API_BASE}/bookings/${bookingId}/cancel`, {
           method: 'PUT',
           headers: {
             Authorization: `Bearer ${token}`,

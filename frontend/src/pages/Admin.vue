@@ -1,7 +1,7 @@
 <template>
   <div class="admin-container">
     <Navbar />
-    
+
     <div class="admin-content">
       <div class="admin-header">
         <h1>Панель администратора</h1>
@@ -84,42 +84,45 @@ import Navbar from '@/components/Layout/Navbar.vue'
 export default {
   name: 'Admin',
   components: {
-    Navbar
+    Navbar,
   },
   setup() {
+    const API_BASE = import.meta.env.VITE_API_URL
+
+    if (!API_BASE) {
+      console.error('VITE_API_URL is not defined')
+    }
     const router = useRouter()
     const stats = ref({
       films: 0,
       halls: 0,
       sessions: 0,
-      bookings: 0
+      bookings: 0,
     })
 
     const loadStats = async () => {
       try {
         const token = localStorage.getItem('token')
-        
-        // Загружаем статистику
+
         const [filmsRes, hallsRes, sessionsRes, bookingsRes] = await Promise.all([
-          fetch('http://localhost:8000/films/', {
-            headers: { 'Authorization': `Bearer ${token}` }
+          fetch(`${API_BASE}/films/`, {
+            headers: { Authorization: `Bearer ${token}` },
           }),
-          fetch('http://localhost:8000/halls/', {
-            headers: { 'Authorization': `Bearer ${token}` }
+          fetch(`${API_BASE}/halls/`, {
+            headers: { Authorization: `Bearer ${token}` },
           }),
-          fetch('http://localhost:8000/sessions/', {
-            headers: { 'Authorization': `Bearer ${token}` }
+          fetch(`${API_BASE}/sessions/`, {
+            headers: { Authorization: `Bearer ${token}` },
           }),
-          fetch('http://localhost:8000/bookings/', {
-            headers: { 'Authorization': `Bearer ${token}` }
-          })
+          fetch(`${API_BASE}/bookings/`, {
+            headers: { Authorization: `Bearer ${token}` },
+          }),
         ])
 
         if (filmsRes.ok) stats.value.films = (await filmsRes.json()).length
         if (hallsRes.ok) stats.value.halls = (await hallsRes.json()).length
         if (sessionsRes.ok) stats.value.sessions = (await sessionsRes.json()).length
         if (bookingsRes.ok) stats.value.bookings = (await bookingsRes.json()).length
-
       } catch (err) {
         console.error('Error loading stats:', err)
       }
@@ -136,9 +139,9 @@ export default {
     })
 
     return {
-      stats
+      stats,
     }
-  }
+  },
 }
 </script>
 
@@ -257,15 +260,14 @@ export default {
   .admin-stats {
     grid-template-columns: 1fr 1fr;
   }
-  
+
   .admin-links {
     grid-template-columns: 1fr;
   }
-  
+
   .admin-link {
     flex-direction: column;
     text-align: center;
   }
 }
-
 </style>

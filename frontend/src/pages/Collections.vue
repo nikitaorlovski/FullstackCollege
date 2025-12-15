@@ -1,7 +1,7 @@
 <template>
   <div class="collections-container">
     <Navbar />
-    
+
     <div class="collections-content">
       <!-- Заголовок с иконкой -->
       <div class="collections-header">
@@ -25,9 +25,7 @@
           <div class="error-icon">⚠️</div>
           <h3>Ошибка загрузки</h3>
           <p>{{ error }}</p>
-          <button @click="loadCollections" class="retry-btn">
-            Попробовать снова
-          </button>
+          <button @click="loadCollections" class="retry-btn">Попробовать снова</button>
         </div>
 
         <div v-else class="collections-main">
@@ -41,19 +39,19 @@
               </div>
             </div>
             <div class="films-scroll-container">
-              <div 
-                v-for="film in enrichedTopFilms" 
-                :key="film.id" 
+              <div
+                v-for="film in enrichedTopFilms"
+                :key="film.id"
                 class="film-card-scroll"
                 @click="goToFilmSessions(film.id)"
               >
                 <div class="film-poster-scroll">
-                  <img 
-                    v-if="film.image_url" 
-                    :src="film.image_url" 
+                  <img
+                    v-if="film.image_url"
+                    :src="film.image_url"
                     :alt="film.title"
                     class="poster-img-scroll"
-                  >
+                  />
                   <div v-else class="poster-placeholder-scroll">🎬</div>
                   <div class="film-rank" v-if="film.total_bookings">
                     🔥 {{ film.total_bookings }}
@@ -80,19 +78,19 @@
               </div>
             </div>
             <div class="films-scroll-container">
-              <div 
-                v-for="film in filteredTopRated" 
-                :key="film.id" 
+              <div
+                v-for="film in filteredTopRated"
+                :key="film.id"
                 class="film-card-scroll"
                 @click="goToFilmSessions(film.id)"
               >
                 <div class="film-poster-scroll">
-                  <img 
-                    v-if="film.image_url" 
-                    :src="film.image_url" 
+                  <img
+                    v-if="film.image_url"
+                    :src="film.image_url"
                     :alt="film.title"
                     class="poster-img-scroll"
-                  >
+                  />
                   <div v-else class="poster-placeholder-scroll">🎬</div>
                   <div class="film-rank">⭐ {{ film.rating }}</div>
                 </div>
@@ -117,23 +115,21 @@
               </div>
             </div>
             <div class="films-scroll-container">
-              <div 
-                v-for="film in filteredUpcomingFilms" 
-                :key="film.id" 
+              <div
+                v-for="film in filteredUpcomingFilms"
+                :key="film.id"
                 class="film-card-scroll"
                 @click="goToFilmSessions(film.id)"
               >
                 <div class="film-poster-scroll">
-                  <img 
-                    v-if="film.image_url" 
-                    :src="film.image_url" 
+                  <img
+                    v-if="film.image_url"
+                    :src="film.image_url"
                     :alt="film.title"
                     class="poster-img-scroll"
-                  >
+                  />
                   <div v-else class="poster-placeholder-scroll">🎬</div>
-                  <div class="film-next-time">
-                    🕒 {{ formatTime(film.next_session) }}
-                  </div>
+                  <div class="film-next-time">🕒 {{ formatTime(film.next_session) }}</div>
                 </div>
                 <div class="film-info-scroll">
                   <h3 class="film-title-scroll">{{ film.title }}</h3>
@@ -156,23 +152,21 @@
               </div>
             </div>
             <div class="films-scroll-container">
-              <div 
-                v-for="film in enrichedPopularWeek" 
-                :key="film.id" 
+              <div
+                v-for="film in enrichedPopularWeek"
+                :key="film.id"
                 class="film-card-scroll"
                 @click="goToFilmSessions(film.id)"
               >
                 <div class="film-poster-scroll">
-                  <img 
-                    v-if="film.image_url" 
-                    :src="film.image_url" 
+                  <img
+                    v-if="film.image_url"
+                    :src="film.image_url"
                     :alt="film.title"
                     class="poster-img-scroll"
-                  >
+                  />
                   <div v-else class="poster-placeholder-scroll">🎬</div>
-                  <div class="film-trend">
-                    📈 {{ film.weekly_bookings }}
-                  </div>
+                  <div class="film-trend">📈 {{ film.weekly_bookings }}</div>
                 </div>
                 <div class="film-info-scroll">
                   <h3 class="film-title-scroll">{{ film.title }}</h3>
@@ -205,9 +199,14 @@ import Navbar from '@/components/Layout/Navbar.vue'
 export default {
   name: 'CollectionsPage',
   components: {
-    Navbar
+    Navbar,
   },
   setup() {
+    const API_BASE = import.meta.env.VITE_API_URL
+
+    if (!API_BASE) {
+      console.error('VITE_API_URL is not defined')
+    }
     const router = useRouter()
     const topFilms = ref([])
     const topRated = ref([])
@@ -222,37 +221,36 @@ export default {
       error.value = ''
       try {
         const token = localStorage.getItem('token')
-        
-        // Загружаем все фильмы для обогащения данных
-        const filmsResponse = await fetch('http://localhost:8000/films/', {
-          headers: { 'Authorization': `Bearer ${token}` }
+
+        // Загружаем все фильмы
+        const filmsResponse = await fetch(`${API_BASE}/films/`, {
+          headers: { Authorization: `Bearer ${token}` },
         })
-        
+
         if (filmsResponse.ok) {
           allFilms.value = await filmsResponse.json()
         }
 
         // Загружаем коллекции
         const [topResponse, ratedResponse, upcomingResponse, weekResponse] = await Promise.all([
-          fetch('http://localhost:8000/views/top-films', {
-            headers: { 'Authorization': `Bearer ${token}` }
+          fetch(`${API_BASE}/views/top-films`, {
+            headers: { Authorization: `Bearer ${token}` },
           }),
-          fetch('http://localhost:8000/views/top-rated', {
-            headers: { 'Authorization': `Bearer ${token}` }
+          fetch(`${API_BASE}/views/top-rated`, {
+            headers: { Authorization: `Bearer ${token}` },
           }),
-          fetch('http://localhost:8000/views/films/upcoming', {
-            headers: { 'Authorization': `Bearer ${token}` }
+          fetch(`${API_BASE}/views/films/upcoming`, {
+            headers: { Authorization: `Bearer ${token}` },
           }),
-          fetch('http://localhost:8000/views/popular-last-week', {
-            headers: { 'Authorization': `Bearer ${token}` }
-          })
+          fetch(`${API_BASE}/views/popular-last-week`, {
+            headers: { Authorization: `Bearer ${token}` },
+          }),
         ])
 
         if (topResponse.ok) topFilms.value = await topResponse.json()
         if (ratedResponse.ok) topRated.value = await ratedResponse.json()
         if (upcomingResponse.ok) upcomingFilms.value = await upcomingResponse.json()
         if (weekResponse.ok) popularWeek.value = await weekResponse.json()
-
       } catch (err) {
         error.value = 'Ошибка загрузки коллекций'
         console.error('Error loading collections:', err)
@@ -264,53 +262,51 @@ export default {
     // Обогащаем данные из топ фильмов полной информацией
     const enrichedTopFilms = computed(() => {
       return topFilms.value
-        .filter(film => film.total_bookings > 0)
+        .filter((film) => film.total_bookings > 0)
         .slice(0, 10)
-        .map(film => {
-          const fullFilm = allFilms.value.find(f => f.id === film.id)
+        .map((film) => {
+          const fullFilm = allFilms.value.find((f) => f.id === film.id)
           return {
             ...film,
             genre: fullFilm?.genre || 'Неизвестно',
             rating: fullFilm?.rating || 0,
             duration: fullFilm?.duration || 0,
-            image_url: fullFilm?.image_url
+            image_url: fullFilm?.image_url,
           }
         })
     })
 
     const filteredTopRated = computed(() => {
-      return topRated.value
-        .filter(film => film.rating >= 7.0)
-        .slice(0, 10)
+      return topRated.value.filter((film) => film.rating >= 7.0).slice(0, 10)
     })
 
     const filteredUpcomingFilms = computed(() => {
-      return upcomingFilms.value
-        .filter(film => film.next_session)
-        .slice(0, 10)
+      return upcomingFilms.value.filter((film) => film.next_session).slice(0, 10)
     })
 
     // Обогащаем данные популярных за неделю
     const enrichedPopularWeek = computed(() => {
       return popularWeek.value
-        .filter(film => film.weekly_bookings > 0)
+        .filter((film) => film.weekly_bookings > 0)
         .slice(0, 10)
-        .map(film => {
-          const fullFilm = allFilms.value.find(f => f.id === film.id)
+        .map((film) => {
+          const fullFilm = allFilms.value.find((f) => f.id === film.id)
           return {
             ...film,
             genre: fullFilm?.genre || 'Неизвестно',
             rating: fullFilm?.rating || 0,
-            image_url: fullFilm?.image_url
+            image_url: fullFilm?.image_url,
           }
         })
     })
 
     const hasCollections = computed(() => {
-      return enrichedTopFilms.value.length > 0 || 
-             filteredTopRated.value.length > 0 ||
-             filteredUpcomingFilms.value.length > 0 ||
-             enrichedPopularWeek.value.length > 0
+      return (
+        enrichedTopFilms.value.length > 0 ||
+        filteredTopRated.value.length > 0 ||
+        filteredUpcomingFilms.value.length > 0 ||
+        enrichedPopularWeek.value.length > 0
+      )
     })
 
     const formatTime = (dateString) => {
@@ -318,7 +314,7 @@ export default {
       const date = new Date(dateString)
       return date.toLocaleTimeString('ru-RU', {
         hour: '2-digit',
-        minute: '2-digit'
+        minute: '2-digit',
       })
     }
 
@@ -340,9 +336,9 @@ export default {
       error,
       loadCollections,
       formatTime,
-      goToFilmSessions
+      goToFilmSessions,
     }
-  }
+  },
 }
 </script>
 
@@ -595,8 +591,12 @@ export default {
 }
 
 @keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
 }
 
 .error-icon {
@@ -659,7 +659,7 @@ export default {
   .film-card-scroll {
     min-width: 140px;
   }
-  
+
   .film-title-scroll {
     font-size: 0.9rem;
   }
